@@ -128,7 +128,7 @@ Given two images of a coplanar scene(image of something from different angles) t
 	
 Thereafter once video is converted to orthographic projection we will use logic of video tracking specified in the  Mean\_shift\_with\_led\_and\_path.m to generate trace file as well as log file containing on and off time of LEDs.\\
 The project uses the mean shift algorithm to track objects.
-Mean shift is a technique to the maxima of a density function. It is also called mode-seeking algorithm.
+Mean shift is a technique to find the maxima of a density function. It is also called mode-seeking algorithm.
 Mean shift finds the target using iteration and find the target that is most similar to the given target. 
 In this algorithm initially a region of interest is selected, then in consecutive iterations it looks in the region of interest and shifts the mean in the direction of increasing density until no more shift is possible, i.e, it has reached the peak of the Probability Distribution Function (densest area).It would be better understood from the following figure.
     \begin{figure}[h!]
@@ -148,7 +148,21 @@ For detecting the glow of the LED we select a rectangular area around the robot 
 
 The audio processing module ampli.m is independent of the above listed processes and generates text files containing on and off time of buzzer.
 We know the frequency of buzzer to near about 2.7kHz to 3kHz.We use DTFT to detect this frequency and hence the buzzer beeps. Using band pass filter we filter out all the frequencies except those in this range and then output the time in a file. Choice of design of the filter and values of different parameters can be found \href{http://in.mathworks.com/help/dsp/ref/bandpassfilter.html}{here}.\\
-Using the log files as input,there is C code that generates the score accordingly.
+Using the log files as input,there is C code that generates the score according to the formulae-
+\begin{figure}[h!]
+		\includegraphics[width=1\linewidth, height=1cm]{score.jpg}
+	\end{figure}\\
+Where
+\begin{itemize}
+\item  error = abs(Required no- Placed no)\\ 
+n can take value between 0 to 4, as there can be maximum of 4 numbers will
+be present in D2.
+\item T is the total time in seconds to complete the task.
+\item CD is the number of correct buzzer beeps.
+\item P is a penalty where 30 (thirty) points are deducted each time when LED is not turned ON or OFF correctly.
+\item B is a bonus of 100 points awarded, if no error is committed.
+\end{itemize}
+
 \section{Use and Demo}
 \textbf{Final Setup Image.}
     \begin{figure}[h!]
