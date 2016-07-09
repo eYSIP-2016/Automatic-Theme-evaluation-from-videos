@@ -1,0 +1,16 @@
+img=imread('testimg9.png');
+findingcorners(img);
+img=imread('testimg10.png');
+findingcorners(img);
+img=imread('testimg11.png');
+findingcorners(img);
+img=imread('testimg12.png');
+findingcorners(img);
+img=imread('testimg13.png');
+findingcorners(img);
+img=imread('testimg14.png');
+findingcorners(img);
+% img=imread('testimg15.pngg');
+% findingcorners(img);
+% img=imread('testimg16.png');
+findingcorners(img);
