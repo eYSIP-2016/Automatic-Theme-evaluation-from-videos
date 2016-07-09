@@ -77,12 +77,12 @@ contents={\includegraphics{logo}}
 \begin{titlepage}
 \raggedright
 {\Large eYSIP2016\\[1cm]}
-{\Huge\scshape Automatic Theme Evaluation from videos. \\[.1in]}
+{\Huge\scshape Automatic Theme Evaluation from Videos \\[.1in]}
 \vfill
 \begin{flushright}
-{\large Keshav Bihani. \\}
-{\large Raj Krishna Srivastava. \\}
-{\large Khalid Waseem. \\}
+{\large Keshav Bihani \\}
+{\large Raj Krishna Srivastava \\}
+{\large Khalid Waseem \\}
 {\large Duration of Internship: $ 21/05/2016-10/07/2016 $ \\}
 \end{flushright}
 
@@ -90,20 +90,20 @@ contents={\includegraphics{logo}}
 \end{titlepage}
 %-------------------------------------------------------------------------------
 
-\chapter[Project Tag]{Automatic Theme Evaluation from videos.}
+\chapter[Project Tag]{Automatic Theme Evaluation from Videos}
 \section*{Abstract}
 This project aims at automatically evaluating themes that are provided to teams during eYantra competition with help of image and audio processing, without the need for any manual intervention.
-Each year, there are many videos submitted before the finals of the competition and automating the evaluation process would help increase number of participants as well as speeding the evaluation process. Moreover this project can find its application in surveillance with slight modifications, and incorporating pattern matching algorithm with audio processing module can help search a small audio clip from a large database within seconds.  
+Each year, there are many videos submitted before the finals of the competition and automating the evaluation process would help in increasing number of participants as well as speeding the evaluation process. Moreover this project can find its application in surveillance with slight modifications. In the project we are tracking a red colored object (i.e robot) but we can program it to track any other colored objects(like vehicles,humans and so on).
 
-\subsection*{Completion status}
-Evaluation of puzzle solver has been achieved. The matlab code generates three log files(.txt files).
+\subsection*{Completion Status}
+Automatic Evaluation of puzzle solver has been achieved. Here is the brief idea of the \href{https://www.youtube.com/watch?v=didlhJrfUUA}{theme}.The Matlab code generates three log files(.txt files).
 \begin{itemize}
-  \item The first one is the trace file generated after applying the mean shift algorithm to track the robot and check if it is following the line or not.
-  \item Second file contains the the on and off time of the leds as well as the numbers that are picked and deposited.
-  \item The third files contains the time of the buzzer beeps that are used to indicate picking up and deposition along with indicating the starting and ending of the run.
+  \item The first one is the trace file generated after applying the mean shift algorithm to track the robot.
+  \item Second file contains the the on and off time of the LEDs as well as the numbers that are picked and deposited.
+  \item The third files contains the time of the buzzer beeps that are used to indicate picking up and deposition of blocks along with indicating the starting and ending of the run.
 \end{itemize} 
-These three text files are read as input by a C program which helps to generate the scores.
-\section{Software used}
+These three text files are read as input by a C program which then generates the score.The C code is independent of the source that generates the log file and takes as input the data corresponding to 1 run. 
+\section{Software Used}
 \begin{itemize}
   \item Matlab.
   \item Detail of software: Version R2012a. 
@@ -111,41 +111,43 @@ These three text files are read as input by a C program which helps to generate 
 \end{itemize}
 
 \section{Software and Code}
-\href{https://github.com/eYSIP-2016/Automatic-Theme-evaluation-from-videos}{Github link} for the repository of code\\
-TranformVideo.m contains the logic for converting the video into orthographic projection.Basic logic is explained below-
-Given two images of a coplanar scene taken from two different cameras, how will we determine the planar homography matrix H?How many point correspondences will we require?
-
+This is the \href{https://github.com/eYSIP-2016/Automatic-Theme-evaluation-from-videos}{Github link} for the repository of code and research done during the intership.\\
+TranformVideo.m contains the logic for converting the video into orthographic projection.This is done to bring, all the videos shot from different angles, to a same viewing angle. This help to ease the processing as the obtained image is rectangular and we can easily map to the original image of the arena. Basic logic is explained below-
+Homography relates any two images of the same planar surface in space (assuming a pinhole camera model).This has many applications, such as image rectification, computation of camera motion—rotation and translation—between two images. Once camera rotation and translation have been extracted from an estimated homography matrix H, this information may be used for navigation, or to insert models of 3D objects into an image or video, so that they are rendered with the correct perspective and appear to have been part of the original scene. Before we get into this let's see Singular Value Decomposition which states that for any mxn matrix A, the following decomposition always exists-  
     \begin{figure}[h!]
-		\includegraphics[width=1\linewidth, height=11cm]{Capture-1.JPG}
+		\includegraphics[width=1\linewidth, height=5cm]{Capture-4.jpg}
+		\centering
+		\caption{Singular Value Decomposition}
+	\end{figure}\\
+Given two images of a coplanar scene(image of something from different angles) taken from two different cameras, how will we determine the planar homography matrix H?How many point correspondences will we require?
+    \begin{figure}[h!]
+		\includegraphics[width=1\linewidth, height=14cm]{Capture-1.JPG}
 		\centering
 		\caption{Finding Homography Matrix}
-	\end{figure}
+	\end{figure}\\
 	
-Thereafter once video is converted we will use logic of video tracking specified in the  Mean\_shift\_with\_led\_and\_path.m to generate trace file as well as log file containing on and off time of leds.\\
+Thereafter once video is converted to orthographic projection we will use logic of video tracking specified in the  Mean\_shift\_with\_led\_and\_path.m to generate trace file as well as log file containing on and off time of LEDs.\\
 The project uses the mean shift algorithm to track objects.
-Mean shift is a non-parametric feature-space analysis technique for locating the maxima of a density function, a so-called mode-seeking algorithm.
-The mean shift iterations are employed to find the target candidate that is the most similar to a given target model, with the similarity being expressed by a metric based on the Bhattacharyya coefficient.
+Mean shift is a technique to the maxima of a density function. It is also called mode-seeking algorithm.
+Mean shift finds the target using iteration and find the target that is most similar to the given target. 
 In this algorithm initially a region of interest is selected, then in consecutive iterations it looks in the region of interest and shifts the mean in the direction of increasing density until no more shift is possible, i.e, it has reached the peak of the Probability Distribution Function (densest area).It would be better understood from the following figure.
     \begin{figure}[h!]
 		\includegraphics[width=1\linewidth, height=11cm]{ROI.jpg}
 		\centering
-		\caption{Probability Distribution Function.}
+		\caption{Illustration of Mean Shift.}
 	\end{figure}\\
-Robot Tracking using Mean Shift
-Mean Shift Algorithm extracts the feature of an object to be tracked. Features can be intensity, color, gradient, etc. In the initial frame the object is chosen. Now a feature of that object is extracted, its histogram is obtained and we come up with a PDF based on this feature. In the next frame we obtain the PDF of the same region and compare it with the previous one using the Bhattacharyya Coefficient. The greater is the similarity between two Distributions, greater is the Bhattacharyya Coefficient. In order to find the new target location we try to maximize the Bhattacharyya Coefficient using mean shift.
+Robot Tracking using Mean Shift\\
+Mean Shift Algorithm tracks objects on the basis of the feature of an object. Features can be intensity, color, gradient, etc. In the initial frame the object is chosen. Now the histogram is obtained and we come up with a PDF from this histogram. Histogram basically gives the frequency of each of the pixel value. In the next frame we obtain the PDF of the same region and if the object has moved the PDF will not be exactly same. Now we use the Bhattacharyya Coefficient to check the similarity between the two PDFs any try to maximize the Bhattacharya Coefficient .Here we use mean shift which iteratively shifts the center of our ROI toward increasing Bhattacharya Coefficient until it reaches the maximum value. 
     \begin{figure}[h!]
 		\includegraphics[width=1\linewidth, height=5cm]{ROI1.jpg}
 		\centering
 		\caption{Robot Tracking using Mean Shift.}
 	\end{figure}\\
+Detecting Glowing of Led and Determining Pick and Drop Positions
+For detecting the glow of the LED we select a rectangular area around the robot and sum up number of blue pixels in each consecutive frame and subtract it with the one obtained in the previous frame. If the difference is above a certain threshold, it corresponds to LED on and a large negative value of difference below a certain threshold corresponds to LED being switched off. The number picked is then identified by mapping the position of LED glow to the original .pdf image of the arena.  
+
 The audio processing module ampli.m is independent of the above listed processes and generates text files containing on and off time of buzzer.
-Firstly the entire signal is converted to frequency domain using fourier transform. 
-    \begin{figure}[h!]
-		\includegraphics[width=1\linewidth, height=7cm]{Capture-2.jpg}
-		\centering
-		\caption{Fourier Transform}
-	\end{figure}\\
-Then we figure out the frequency of buzzer to near about 2.7kHz to 3kHz. Using band pass filter we filter out frequencies in this range and then output the time in a file. Choice of design of the filter and values of different parameters can be found \href{http://in.mathworks.com/help/dsp/ref/bandpassfilter.html}{here}.\\
+We know the frequency of buzzer to near about 2.7kHz to 3kHz.We use DTFT to detect this frequency and hence the buzzer beeps. Using band pass filter we filter out all the frequencies except those in this range and then output the time in a file. Choice of design of the filter and values of different parameters can be found \href{http://in.mathworks.com/help/dsp/ref/bandpassfilter.html}{here}.\\
 Using the log files as input,there is C code that generates the score accordingly.
 \section{Use and Demo}
 \textbf{Final Setup Image.}
@@ -154,7 +156,7 @@ Using the log files as input,there is C code that generates the score accordingl
 		\centering
 		\caption{Testing Purpose}
 	\end{figure}\\
-\textbf{User Instruction for demonstration.}
+\textbf{User Instruction for demonstration}
 \begin{itemize}
   \item The position of the arena should be as shown with all the corners visible.
   \item 4cm thick black chart paper must be pasted on the borders of the arena.
@@ -163,7 +165,7 @@ Using the log files as input,there is C code that generates the score accordingl
   \item Adequate lightening must be present and there should not be much variation in conditions during filming the video.
   \item The robot should be covered with red colored paper as shown in the image.
 \end{itemize}
-\textbf{Demonstration Videos.}\\
+\textbf{Demonstration Videos}\\
 \href{https://youtu.be/vaqDc_Qd9p8}{Original video with theme implemented.}\\
 \href{https://youtu.be/ZgN-Ncc9VRw}{Part of the original video that is being processed.}\\
 \href{https://youtu.be/vI5nk7CcUwI}{Homographed Video of task.}\\
@@ -174,19 +176,16 @@ Using the log files as input,there is C code that generates the score accordingl
 \item First of all we need to implement parallel processing in our code since the time for evaluation is humongous to be of any practical use.
 Parallel processing is useful when previous outputs do not affect the present inputs.\\
 Here we know each frame is represented as matrix and to transform it to orthographic projection we perform operations on each point of the matrix.Now each point is independent to any other point in matrix and operations on them can be done parallely via GPU.
-\item Secondly relying just on image processing is not going to allow us achieve our goal of making this evaluation generic. We can incorporate machine learning as well.Machine learning is a type of artificial intelligence (AI) that provides computers with the ability to learn without being explicitly programmed. Machine learning focuses on the development of computer programs that can teach themselves to grow and change when exposed to new data.\\
-We can use concepts of ML to identify the arena, the robot and even to identify a perfect run(i.e by giving it samples of prefect task completion).This reduces the risk of errors due to lightening conditions.\\
-Support Vector Machines(SVM) are best suited for achieving this task.A SVM is a discriminative classifier formally defined by a separating hyperplane. In other words, given labeled training data (supervised learning), the algorithm outputs an optimal hyperplane which categorizes new examples.More about it can be found on this \href{http://docs.opencv.org/2.4/doc/tutorials/ml/introduction_to_svm/introduction_to_svm.html}{link}
-\item Lastly state based evaluation will help us achieve the final goal of making this process generic.
+\item Secondly relying just on image processing is not going to allow us achieve our goal of making this evaluation generic. We can incorporate machine learning as well.Machine learning helps computers to learn without being explicitly programmed. It focuses on the development of computer programs that can teach themselves to grow and change when exposed to new data.\\
+We can use concepts of ML to identify the arena, the robot and even to identify a perfect run(i.e by giving it samples of prefect task completion).
 \end{itemize}
 
 \section{Bug report and Challenges}
 \begin{itemize}
-\item The audio processing module isn't accurate. It would produce correct results every 7 out of 10 times. Rest of the time minor changes in thresholding needs to be done to get desired result.
-\item Another problem with the code is that the algorithm used isn't optimized. The pre-processing time is too much to be of any practical use.
-\item Change in lightening condition during videos pose an large risk of error generation.
+\item Change in lightening condition during videos pose an large risk of error generation.Errors such as incorrect detection of robot, improper detection of the area of the arena. These errors occur because we have taken RGB colorspace to threshold the image and detect various objects and these thresholding values are very sensitive to lightening conditions.
     \begin{figure}[h!]
-		\begin{subfigure}{0.4\textwidth}			\includegraphics[width=1\linewidth, height=2.5cm]{1.JPG}
+		\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=1\linewidth, height=2.5cm]{1.JPG}
 			\caption{Earlier}
 		\end{subfigure}
 		\begin{subfigure}{0.4\textwidth}
@@ -204,14 +203,19 @@ Support Vector Machines(SVM) are best suited for achieving this task.A SVM is a 
 			\caption{Thresholding later with same threshold values}
 		\end{subfigure}
 	\end{figure}
+\item The audio processing module isn't accurate. The manually set threshold works in about 70\% of the cases.Rest of the time minor changes in thresholding needs to be done to get desired result.
+\item Another problem with the code is that the homography part isn't optimized. The pre-processing time is too much to be of any practical use,since video of about a minute and half takes nearly 20 minutes to convert. 
 \end{itemize}
+
+
+
 
 \begin{thebibliography}{li}
 \bibitem{wavelan97}
 Dr. Niket Kaisare
 {\em \href{https://www.youtube.com/watch?v=pj4KKLUMIAg&list=PLa8a_8vztYc7aK6H4bpQTbOqelVIND9Aw}{Introduction to Matlab}}.
 \bibitem{wavelan97}
-Dorin Comaniciu, Visvanathan Ramesh,
+Dorin Comaniciu, Visvanathan Ramesh, Peter Meer
 {\em \href{http://comaniciu.net/Papers/MsTracking.pdf}{Research paper on mean shift}}.
 \bibitem{wavelan97}
  Rashi Agrawal
@@ -226,8 +230,7 @@ Mathworks Community
 \bibitem{wavelan97}
 Wikipedia
 {\em \href{https://en.wikipedia.org/wiki/Support_vector_machine}{Support Vector Machine.}}
-\bibitem{wavelan97}
-Google
+
 \end{thebibliography}
 
 
