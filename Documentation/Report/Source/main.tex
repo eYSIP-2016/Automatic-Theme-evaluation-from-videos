@@ -33,6 +33,7 @@
 
 %use of package for section title formatting
 \usepackage{titlesec}
+\usepackage{amsmath}
 \titleformat{\chapter}
   {\Large\bfseries} % format
   {}                % label
@@ -116,20 +117,114 @@ These three text files are read as input by a C program which then generates the
 
 \section{Software and Code}
 This is the \href{https://github.com/eYSIP-2016/Automatic-Theme-evaluation-from-videos}{Github link} for the repository of code and research done during the intership.\\
-TranformVideo.m contains the logic for converting the video into orthographic projection.This is done to bring, all the videos shot from different angles, to a same viewing angle. This help to ease the processing as the obtained image is rectangular and we can easily map to the original image of the arena. Basic logic is explained below-
-Homography relates any two images of the same planar surface in space (assuming a pinhole camera model).This has many applications, such as image rectification, computation of camera motion—rotation and translation—between two images. Once camera rotation and translation have been extracted from an estimated homography matrix H, this information may be used for navigation, or to insert models of 3D objects into an image or video, so that they are rendered with the correct perspective and appear to have been part of the original scene. Before we get into this let's see Singular Value Decomposition which states that for any mxn matrix A, the following decomposition always exists-  
-    \begin{figure}[h!]
-		\includegraphics[width=1\linewidth, height=5cm]{Capture-4.jpg}
+TranformVideo.m contains the logic for converting the video into orthographic projection.This is done to bring, all the videos shot from different angles, to a same viewing angle.This help to ease the processing as the obtained image is rectangular and we can easily map to the original image of the arena. Basic logic is explained below-
+Homography relates any two images of the same planar surface in space (assuming a pinhole camera model).This has many applications, such as image rectification, computation of camera motion,rotation and translation,between two images. Once camera rotation and translation have been extracted from an estimated homography matrix H, this information may be used for navigation, or to insert models of 3D objects into an image or video, so that they are rendered with the correct perspective and appear to have been part of the original scene. 
+
+Two parallel lines on the same plane can never intersect in Euclidean space geometry. How ever in projective space geometry two parallel lines can intersect at horizon, eg: picture of a railroad, although the two rails are parallel but in picture you can see them intersecting at horizon.\\
+Euclidean space(or Cartesian space) describes 2D/3D geometry very well but they are not sufficient to handle the projective space.Actually  Euclidean geometry is subset of projective geometry.\\
+Homogeneous Coordinates, are a way of representing N dimensional (Cartesian coordinates) with N+1 numbers in projective space. Homogeneous coordinates makes calculation of graphics and geometry possible in projective space.
+eg: To make 2D Homogeneous coordinates, we simply add an additional variable ($\omega$), into existing coordinates. Therefore a point(X,Y) in Cartesian coordinate becomes(x,y,$\omega$) in homogeneous coordinates.\\ 
+such that: $X=x/\omega$ and $Y=y/\omega$ where X and Y Cartesian Coordinates.
+
+Let
+\begin{bmatrix}
+$x_1$\\   
+$y_1$
+\end{bmatrix} be the Cartesian coordinate of $P_1$ and \begin{bmatrix}
+$x_2$\\   
+$y_2$
+\end{bmatrix} be the Cartesian coordinate of $P_2$ and \begin{bmatrix}
+$u_1$\\   
+$v_1$\\
+$\omega_1$
+\end{bmatrix} and \begin{bmatrix}
+$u_2$\\   
+$v_2$\\
+$\omega_2$
+\end{bmatrix} be homogeneous coordinates of $P_1$ and $P_2$ respectively.\\
+\begin{figure}[h!]
+		\includegraphics[width=0.6\linewidth, height=6cm]{homo.jpg}
 		\centering
-		\caption{Singular Value Decomposition}
+		\caption{Sample}
 	\end{figure}\\
-Given two images of a coplanar scene(image of something from different angles) taken from two different cameras, how will we determine the planar homography matrix H?How many point correspondences will we require?
-    \begin{figure}[h!]
-		\includegraphics[width=1\linewidth, height=14cm]{Capture-1.JPG}
-		\centering
-		\caption{Finding Homography Matrix}
-	\end{figure}\\
-	
+Then we have $x_1=u_1/\omega_1$ and $y_1=v_1/\omega_1$ \\
+Similarly $x_2=u_2/\omega_1$ and $y_2=v_2/\omega_1$.
+
+Given two images of coplanar scene, the two points $P_1$ and $P_2$ in the image 1 and 2 are related by a transformation matrix(Homography matrix) H.
+i.e. $P_2 =$ 
+\begin{bmatrix}
+$u_2$\\   
+$v_2$\\
+$\omega_2$
+\end{bmatrix}= H$P_1$ = \begin{bmatrix}
+$H_{11} & H_{12} & H_{13}$\\   
+$H_{21} & H_{22} & H_{23}$\\
+$H_{31} & H_{32} & H_{33}$\\
+\end{bmatrix}\begin{bmatrix}
+$u_1$\\   
+$v_1$\\
+$\omega_1$
+\end{bmatrix}\\
+
+Hence $x_2$= $\displaystyle \frac{u_2}{\omega_2}$ = $\displaystyle \frac{H_{11}u_1+H_{12}v_1+H_{13}\omega_1}{H_{31}u_1+H_{32}v_1+H_{33}\omega_1}$ =$\displaystyle \frac{H_{11}x_1+H_{12}y_1+H_{13}}{H_{31}x_1+H_{32}y_1+H_{33}}$ -- eqn(i)\\
+
+Similarly $y_2$=$\displaystyle \frac{H_{21}x_1+H_{22}y_1+H_{23}}{H_{31}x_1+H_{32}y_1+H_{33}}$ --eqn(ii)\\
+
+Rearranging eqn(i) we get\\
+$x_2x_1H_{31}+x_2y_1H_{32}+x_2H_{33}-x_1H_{11}-y_1H_{12}-H_{13}=0$ --eqn(iii) \\
+
+Similarly\\$y_2x_1H_{31}+y_2y_1H_{32}+y_2H_{33}-x_1H_{21}-y_1H_{22}-H_{23}=0$ --eqn(iv)\\
+
+For 1 point P we obtained 2 equations. In homography matrix H there are 8 degrees of freedom($H_{11},H_{12},...,H_{32}$) and $H_{33}$ is always 1. Therefore we need atleast 4 points correspondence to solve the homography matrix.
+In above eqn(iii) and (iv) ($H_{11},H_{12},....H_{32}$) are unknown.Arranging the above equations in matrix form and using suitable number pf point correspondence (atleast 4) we get\\
+\begin{bmatrix}
+    $-x_{1i}$ & $-y_{1i}$ & $-1$ & 0 & 0 & 0 & $x_{2i}x_{1i}$ & $x_{2i}y_{1i}$ & $x_{2i}$ \\
+    0 & 0 & 0 & $-x_{1i}$ & $-y_{1i}$ & $-1$ & $y_{2i}x_{1i}$ & $y_{2i}y_{1i}$ & $y_{2i}$\\
+     \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+     \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+     \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+     \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+     \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+     \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots 
+\end{bmatrix}
+\begin{bmatrix}
+    $H_{11}$\\
+    $H_{12}$\\
+    $H_{13}$\\
+    $H_{21}$\\
+    $H_{22}$\\
+    $H_{23}$\\
+    $H_{31}$\\
+    $H_{32}$\\
+    $H_{33}$\\
+\end{bmatrix}=0\\
+
+where\\ \begin{bmatrix}
+    $-x_{1i}$ & $-y_{1i}$ & $-1$ & 0 & 0 & 0 & $x_{2i}x_{1i}$ & $x_{2i}y_{1i}$ & $x_{2i}$ \\
+    0 & 0 & 0 & $-x_{1i}$ & $-y_{1i}$ & $-1$ & $y_{2i}x_{1i}$ & $y_{2i}y_{1i}$ & $y_{2i}$\\
+     \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+     \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+     \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+     \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+     \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+     \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots 
+\end{bmatrix} =A and \begin{bmatrix}
+    $H_{11}$\\
+    $H_{12}$\\
+    $H_{13}$\\
+    $H_{21}$\\
+    $H_{22}$\\
+    $H_{23}$\\
+    $H_{31}$\\
+    $H_{32}$\\
+    $H_{33}$\\
+\end{bmatrix}=h\\
+
+Therefore we get Ah=0 --eqn(v)\\
+A = 2Nx9 and h=9x1 where N is point of correspondence (atleast 4.)
+
+Eqn (v) can be solved using the SVD of A i.e. $A=USV^T$.Vector h is given by singular vector corresponding to smallest regular value.
+
     Thereafter once video is converted to orthographic projection we will use logic of video tracking specified in the  Mean\_shift\_with\_led\_and\_path.m to generate trace file as well as log file containing on and off time of LEDs.\\
     The project uses the mean shift algorithm to track objects.
     Mean shift is a technique to find the maxima of a density function. It is also called mode-seeking algorithm.
@@ -212,7 +307,7 @@ m- Number of bins (256) and\\
 
     The Mean Shift Algorithm for object tracking is explained in the flowchart given below.\\
     \begin{figure}[h!]
-		\includegraphics[width=1\linewidth, height=8cm]{fc.jpg}
+		\includegraphics[width=1.2\linewidth, height=10cm]{poc-1.jpg}
 		\centering
 		\caption{Flowchart of mean shift tracking.}
 	\end{figure}\\
