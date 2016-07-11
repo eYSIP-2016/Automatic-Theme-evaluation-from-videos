@@ -130,23 +130,93 @@ Given two images of a coplanar scene(image of something from different angles) t
 		\caption{Finding Homography Matrix}
 	\end{figure}\\
 	
-Thereafter once video is converted to orthographic projection we will use logic of video tracking specified in the  Mean\_shift\_with\_led\_and\_path.m to generate trace file as well as log file containing on and off time of LEDs.\\
-The project uses the mean shift algorithm to track objects.
-Mean shift is a technique to find the maxima of a density function. It is also called mode-seeking algorithm.
-Mean shift finds the target using iteration and find the target that is most similar to the given target. 
-In this algorithm initially a region of interest is selected, then in consecutive iterations it looks in the region of interest and shifts the mean in the direction of increasing density until no more shift is possible, i.e, it has reached the peak of the Probability Distribution Function (densest area).It would be better understood from the following figure.
+    Thereafter once video is converted to orthographic projection we will use logic of video tracking specified in the  Mean\_shift\_with\_led\_and\_path.m to generate trace file as well as log file containing on and off time of LEDs.\\
+    The project uses the mean shift algorithm to track objects.
+    Mean shift is a technique to find the maxima of a density function. It is also called mode-seeking algorithm.
+    Mean shift finds the target using iteration and find the target that is most similar to the given target. 
+    In this algorithm initially a region of interest is selected, then in consecutive iterations it looks in the region of interest and shifts the mean in the direction of increasing density until no more shift is possible, i.e, it has reached the peak of the Probability Distribution Function (densest area).It would be better understood from the following figure.
     \begin{figure}[h!]
-		\includegraphics[width=1\linewidth, height=11cm]{ROI.jpg}
+		\includegraphics[width=1\linewidth, height=12cm]{ROI.jpg}
 		\centering
 		\caption{Illustration of Mean Shift.}
 	\end{figure}\\
-Robot Tracking using Mean Shift
-Mean Shift Algorithm tracks objects on the basis of the feature of an object. Features can be intensity, color, gradient, etc. In the initial frame the region of interest is chosen, which is our target object. We obtain an m-bin histogram of this region after converting it to grayscale. Now PDF of each of the m bins is calculated in that region. In the next frame we again find m-bin histogram of the same region and find probability distribution of each of the m bins. Now the similarity between these bins is found out using the Bhattacharyya coefficient. To find the new target location we have to maximize the Bhattacharyya coefficient.  We move the center of the patch toward the increasing density of the Bhattacharyya coefficient. For further explanation visit\href{https://www.youtube.com/watch?v=M8B3RZVqgOo}{here} 
+
+    Robot Tracking using Mean Shift
+    For tracking an object using mean shift we specify the region in the frame that is our target patch. Then we use a feature space of the object to track that object. Feature space can be color, intensity, gradient, etc. We use a weighted histogram in our algorithm and represent the target patch. The target patch is converted in to m-dimensional vector by obtaining m-bin histogram of the image. This is the PDF of the target patch. \\
     \begin{figure}[h!]
-		\includegraphics[width=1\linewidth, height=5cm]{ROI1.jpg}
-		\centering
-		\caption{Robot Tracking using Mean Shift.}
+		\includegraphics[width=0.5\linewidth, height=1cm]{eq1.jpg}
 	\end{figure}\\
+    
+    Now PDF of the candidate patch, which is the initial estimate of the target, in the next frame is given by-
+     \begin{figure}[h!]
+		\includegraphics[width=0.5\linewidth, height=1cm]{eq2.jpg}
+	\end{figure}\\
+	This PDF is centered at ‘y’.
+    We have to find ‘y’ such that the similarity between the two PDF’s is maximum.
+    Now to find the similarity between these two PDF’s we use the Bhattacharyya Coefficient (\rho ) .\\
+   
+    \begin{figure}[h!]
+    \includegraphics[width=0.5\linewidth, height=1.5cm]{eq3.jpg}
+	\end{figure}\\
+	
+	So to find the new target location we need to maximize the Bhattacharyya coefficient.\\
+    Calculating ‘q’ and ‘p(y)’:\\
+    The probability of occurrence of a particular intensity value ‘u’ is given by-\\
+    \begin{figure}[h!]
+    \includegraphics[width=0.5\linewidth, height=1.5cm]{eq4.jpg}
+	\end{figure}\\
+    where,
+    $k\|x_i\|$- is a Gaussian kernel to provide weights based on spatial distance.
+    u varies from 1 to m (In our code it varies from 0 to 255 as we took 256 bins, one for each pixel value).\\
+    $ \delta [S(x_i )-u] $- Delta function is 1 when $S(x_i )=u$\\ 
+    $S(x_i)$-It is the pixel intensity at location $x_i$ inside patch.\\
+    
+    In simple words to calculate the probability density for a particular ‘u’ , we check how many times intensity value ‘u’ occurs inside the patch. Let ‘u’ occur at location $x_1$, $x_2$, $x_3,$, $x_4$\\
+    
+    \begin{figure}[h!]
+		\includegraphics[width=0.5\linewidth, height=4cm]{img.jpg}
+		\centering
+		\caption{Sample Patch with distribution of a certain intensity value-'hue'.}
+	\end{figure}\\
+    
+    So its probability distribution is given by $p(u)= w(x_1)+w(x_2)+w(x_3 )+w(x_4)$
+In the figure weights w(x) are derived from Gaussian Kernel at position x1 and so on. Gaussian kernel assigns the weights such that the pixels closer to the center have large weightage than the one that are far from the center.
+Let’s come back to similarity of target and candidate PDFs.\\
+
+To maximize the Bhattacharyya Coefficient we firstly expand ρ(y)  using Taylor series.\\
+    \begin{figure}[h!]
+    \includegraphics[width=1\linewidth, height=1.5cm]{eq5.jpg}
+	\end{figure}\\
+
+To maximize the above term we have to maximize the second term of the Taylor expansion as the first term is independent of ‘y’, so it remains constant.
+It is assumed that the target candidate does not change drastically.\\
+$p_u (y)$ is probability of occurrence of intensity value u, when center of the patch is located at y. \\
+Substituting $p_u (y)$in the above eqn. we obtain-\\
+    \begin{figure}[h!]  
+    \includegraphics[width=1\linewidth, height=1.5cm]{eq6.jpg}
+	\end{figure}\\
+    where,
+    $C_h$- Constant\\
+$b(x_i)$- Intensity at $x_i$\\
+y- Kernel center\\
+m- Number of bins (256) and\\
+\begin{figure}[h!]  
+    \includegraphics[width=0.4\linewidth, height=1.5cm]{eq7.jpg}
+	\end{figure}\\
+	we have to maximize weights $w_i$, to maximize weights we will use Mean Shift Algorithm, which also gives us the shift of target.\\
+	\begin{figure}[h!]  
+    \includegraphics[width=0.5\linewidth, height=2cm]{eq8.jpg}
+	\end{figure}\\
+	We repeat the process until the similarity between two PDFs is greater than a certain threshold.
+    Once we obtain a similarity greater than out threshold, we have found our new target location.\\ 
+
+    The Mean Shift Algorithm for object tracking is explained in the flowchart given below.\\
+    \begin{figure}[h!]
+		\includegraphics[width=1\linewidth, height=8cm]{fc.jpg}
+		\centering
+		\caption{Flowchart of mean shift tracking.}
+	\end{figure}\\
+
 Detecting Glowing of Led and Determining Pick and Drop Positions
 For detecting the glow of the LED we select a rectangular area around the robot and sum up number of blue pixels in each consecutive frame and subtract it with the one obtained in the previous frame. If the difference is above a certain threshold, it corresponds to LED on and a large negative value of difference below a certain threshold corresponds to LED being switched off. The number picked is then identified by mapping the position of LED glow to the original .pdf image of the arena.  
 
